@@ -1,0 +1,447 @@
+Slide 1 - Network intrusion detection methods & how to evade them
+========================================================
+
+Slide 2 - Network Intrusion Detection System (NIDS) Overview
+
+Source:https://netacea.com/glossary/network-intrusion-detection-system-nids/
+Image Source: https://www.geeksforgeeks.org/intrusion-detection-system-ids/
+
+
+A Network Intrusion Detection System, or NIDS, sits on a network behind a firewall and monitors network traffic - such as packet headers, packet transmissions, protocols, and applications - for malicious activity.
+
+There are five types of NIDS: 
+-Signature-based, which detects malicious behavior based on characteristics of known attacks.
+-Stateful protocol analysis, which compares new events to a network’s normal operations.
+-Behavioral-based, which uses behavioral analysis.
+-Anomaly-based, which learns a network’s connections and use over time, but can be prone to false positives.
+-Heuristic-based, which uses heuristics without signatures or definitions. 
+
+In this lecture, we’ll focus on network traffic indicators that can be detected using signature and anomaly-based detection methods for a series of offensive techniques, as well as ways an attacker can evade detection.
+
+
+----------------------------------------------------------------
+
+Slide 3 - Signature vs. Anomaly-based detection
+
+Sources: https://www.linkedin.com/advice/0/what-pros-cons-signature-based-vs-anomaly-based
+https://www.dnsstuff.com/network-intrusion-detection-software
+
+Signature-based NIDS detects malicious network behavior based on signatures or patterns of previous attacks, which are stored in a database. A signature-based NIDS relies solely on signatures, so if there is a novel attack or the system database doesn’t have the latest signatures, then those attacks will not be detected. The database needs to be updated constantly to keep up with the threat landscape, but this requires an increase in storage and processing as the database grows. 
+
+Anomaly-based NIDS detects malicious network behavior based on deviations from an established baseline of standard activity. Unlike signature-based NIDS, an anomaly-based NIDS does have the ability to detect novel attacks, but there’s also a risk of false positives for new, yet valid, behavior. The model requires additional training, and can be costly and complex to implement. 
+
+Systems that incorporate both signature and anomaly-based methods are most effective because they balance their strengths and weaknesses together. 
+
+
+----------------------------------------------------------------
+
+Slide 4 - Primer on Snort Rules: Rule Header
+
+Image source: https://docs.snort.org/rules/headers/file_rules
+Source: https://docs.snort.org/rules/
+
+Snort is a popular, open-source network intrusion detection and prevention system. Snort uses protocol, signature, and anomaly-based methods; however, it’s “rule”-based and does not use machine learning. This means that, although Snort isn’t restricted to known attack signatures, rules for anomalous behavior still need to be written and added to the system to be detected. 
+
+Snort rules have two parts: a rule header and rule options. 
+
+The format of the rule header is as depicted on the slide. There is a rule action, protocol,source IP, source port, destination IP, and destination port. 
+
+- The rule actions tell Snort what actions to take when there is a packet match.
+- The alert action generates an alert on the current packet.
+- The block action blocks the current packet and all the subsequent packets in the flow. 
+- The drop action drops the current packet.
+- The log action logs the current packet.
+- The pass action ignores the packet and marks it as passed.
+
+The protocol tells Snort what type of packets should be filtered or analyzed. Snort currently filters TCP, UDP, IP, and ICMP.
+
+The source and destination IP addresses and port numbers are self explanatory.
+
+What does the example rule do? 
+It creates an alert based on external TCP traffic from port 80 or 143 to any internal port.
+
+----------------------------------------------------------------
+
+Slide 5 - Primer on Snort Rules: Rule Options
+
+Image source : https://docs.snort.org/rules/headers/file_rules
+Source : https://docs.snort.org/rules/
+
+Snort rule options define specific criteria that need to be met. There are four categories of rule options:
+General, which provide context for the given rule
+Payload, which sets payload specific criteria
+Non-payload for non-payload specific criteria 
+Post-detection to set actions to take against a given packet after the rule has "fired"
+
+There are several options per category which can be found in Snort’s documentation. The example on the slide uses the following general options:
+Msg, which includes the message to be printed when a rule matches.
+Classtype, which assigns a classification to the rule indicating the kind of attack that will be associated with the event
+Sid, which is a unique signature number assigned to the snort rule
+Priority, which sets the severity level according to importance of the event
+Service, which sets the list of services to be associated to the rule
+File_meta, which sets file metadata for the associated identification rule
+
+More in detail at : https://docs.snort.org/rules/options/general/ 
+
+Payload Detection options:
+This rule option gives the format of data we are filtering, the place we intend to make snort look in the payload data.
+Content: string matching in the data
+Distance: previous content match from where we can start searching
+Regex: regex to check against payload data (regex)
+Fast pattern: the exit where rule processing should stop or continue
+More in detail at : https://docs.snort.org/rules/options/payload/
+
+
+Non-payload options evaluate non-TCP and UDP data sections and keep track of packet states. Examples include:
+TTL: look up specific IP header TTL values
+TCP: TCP sequence numbers
+ACK: acknowledgement numbers
+File_type: constraint to a particular file type.
+
+More in detail at : https://docs.snort.org/rules/options/non_payload/
+
+Post-detection options are specific triggers that take place after a rule is finished. For example:
+replace: match and then overload payload data
+detection_filter: log additional packets after rule event and generate an event only after multiple rule hits
+
+More in detail at : https://docs.snort.org/rules/options/post/
+
+More on how to write rules at : https://docs.snort.org/rules/options/
+
+----------------------------------------------------------------
+
+Slide 6 - Recent changes to Snort3 rules
+
+Self explanatory
+
+
+----------------------------------------------------------------
+
+Slide 7 - ML for Anomaly detection
+
+Image Source: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9610873/bin/sensors-22-07999-g005.jpg
+
+(Detecting Reconnaissance and Discovery Tactics from the MITRE ATT&CK Framework in Zeek Conn Logs Using Spark’s Machine Learning in the Big Data Framework)
+
+This image is just an example of the data processing and flow for training a machine learning model for anomaly detection.
+
+----------------------------------------------------------------
+
+Slide 8 - Review of Offensive Tactics & Techniques
+
+MITRE ATT&CK is a knowledge-base of offensive tactics and techniques, including detection methods and mitigation strategies. Offensive tactics include:
+
+Reconnaissance: information gathering to plan operations
+Resource Development: establishing resources used to support operations
+Initial access: getting on the network
+Execution: running malicious code
+Persistence: staying on the network
+Privilege escalation: gaining higher-level permissions
+Defense evasion: avoiding detection
+Credential access: stealing account names and passwords
+Discovery: figuring out victim environment
+Lateral movement: moving throughout the network
+Collection: gathering data of interest
+Command & Control: establishing communication with compromised systems
+Exfiltration: removing data from the network
+Impact: manipulation, interruption, or destruction of systems and data
+
+In the remaining slides, we’ll discuss network traffic data associated with various techniques outlined in the MITRE ATT&CK framework. You can find direct links for each tactic in the speaker notes.
+
+----------------------------------------------------------------
+
+Slide 9 - Fictitious attack that can be detected by NIDS
+
+All of these things can leave a network traffic trail that can be detected with NIDS. We will explore network data, signature detection methods, anomaly detection methods, and evasion techniques for each.
+
+----------------------------------------------------------------
+
+Slide 10 - Discovery: Network Service Discovery
+
+https://attack.mitre.org/techniques/T1046/
+https://www.giac.org/paper/gsec/1985/stealth-port-scanning-methods/103446
+
+During Network Service Discovery, attackers get a list of services running on network hosts. This list can be used to identify potential vulnerabilities in the network, such as use of outdated or unsecure services.
+
+Indicators of Network Service Discovery are:
+multiple ports sending multiple requests from one or a range of IP addresses, which can be a sign of port scanning by a malicious outsider to discovery open ports and learn about the services running on the network. Once the adversary identifies an open port, they can gather information about the network. For example, an adversary can use service and version detection on NMAP to detect the mail service used.
+Unusually high failed login attempts or successful login attempts from suspicious IPs are a good indication that an adversary is trying to scan your services. An adversary is trying to brute force their way to gain access to an account on your network, then once it is done, the adversary can then attempt to escalate privileges and do further network reconnaissance.
+As we know, DNS queries help us get IP address of the domain we intend to visit. An organization usually sets up security measures expecting DNS related traffic on port 53, but DNS-related traffic on other non-standard ports is a strong indicator that an adversary is trying to discovery which services are running on your network by analyzing the response returned (techniques like banner grabbing are followed here)
+An attacker can opt for a TCP SYN scan or TCP connect scan which provide the state of the port (open, closed, filtered).
+Protocol anomalies occur when there is a violation of RFC (Request for Comment) protocol specifications. For example, an adversary might perform a TCP SYN (or half open) stealth scan to find the status of ports on the network. The intrusion detection system can be configured to detect TCP SYN scan which violates RFC 793, 9293. The TCP SYN scan also leaves a huge trail of incomplete three-way handshakes, which is another indicator that can be detected.
+
+The organization can take precautionary measures by closing ports that don’t need to be open.
+
+Evasion techniques include:
+Stealth scanning, including half open scan (mentioned above), FIN scan (just sends FIN, returns RST if closed), Xmas tree scan (similar to FIN, but also sends URG and PSH), NULL scan (no flags, RST if closed, ignored if open)
+Slow scanning
+Encrypted traffic
+Customized scans, which are tailored to an environment
+
+----------------------------------------------------------------
+
+Slide 11 - Initial access: Phishing attachment/link
+
+MITRE resource: https://attack.mitre.org/techniques/T1566/
+Image source: https://www.insightportal.io/news/all-news/homoglyph-characters-being-used-for-malicious-web-domains
+Sources: https://resources.infosecinstitute.com/topic/how-to-scan-email-headers-for-phishing-and-malicious-content/
+https://mxguarddog.com/faq.non_standard_port/
+https://serverfault.com/questions/123744/can-i-receive-mail-at-another-port-like-465-instead-of-default-25-on-my-mail-ser
+https://www.stamus-networks.com/blog/weak-attack-signals-your-legacy-ids-will-miss-homoglyphs
+
+As we mentioned, scanning for open ports for email protocols (25 for SMTP, 110 for POP3, 143 for IMAP) can give an attacker information about the type of mail client their victim is using, which can serve as an aid in developing a phishing attack. For example, the 2017 Google Docs Phishing Campaign (https://www.cisa.gov/news-events/alerts/2017/05/04/google-docs-phishing-campaign), which targeted Google accounts. Use of Google services could have been implied during network service discovery and other reconnaissance methods, helping attackers choose who to target and how to implement their phishing attack.
+
+Network Traffic Content Indicators for phishing include:
+emails with a malicious link or attachment
+known malicious or unusual file types
+unusual file sizes
+suspicious file names
+unexpected email client
+the sender’s reputation (has there been communication between the sender and receiver in the past?)
+sender’s name and email address do not match
+empty TO-field, which can indicate a mass mailer and imminent DDOS attack
+use of homoglyphs, which are those characters that look like standard letters but aren’t portraying incorrect domain names that seem close to original domain name.
+An email can look unsuspicious, but email headers can reveal that reply-to and return_path do not point towards to a legitimate email address. SNORT can detect anomalies in the email header (homoglyphs in domain name, public email being used instead of company domain mail, suspicious paths between sender and receiver).
+Emails seeking credentials are from public email domain (public email instead of company domain mail is used).
+
+Network Traffic Flow indicators include:
+Non-standard port use. For example, emails to an organization normally enter from an outside source through port 110. SNORT can be used to block any port apart from 110 being used to forward email.
+alert tcp any any -> any !110 (msg:"Email received on non-standard port"; sid:1;)
+Suspicious path between sender and receiver
+
+Example snort rules:
+Snort rule to detect homoglyphs in domain name in the email:
+alert tcp any any -> any any (msg:"Homoglyphs in email domain"; content:"From|3a|"; nocase; content:"@%{BASE64_EMAIL}|0d 0a|"; metadata:service smtp; pcre:"/[@.][^\w]*(\w{4,})[^\w]*\.(com|org|net|edu)/P"; sid:2;)
+
+Snort rule to detect empty “To:” field in the email : 
+alert tcp any any -> any 25 (msg:"Possible DDOS attack due to mail from possible spammer"; content:"To: "; depth:4; content:"|0d 0a|"; within:100; byte_test:4,>,5,0,relative; sid:3; rev:1;)
+
+Evasion Techniques include:
+obfuscated URLs or domain
+encrypting or obfuscating the payload
+Impersonation (covered on next slide)
+social engineering techniques to trick users into ignoring warning messages
+
+----------------------------------------------------------------
+
+Slide 12 - Evasion: Impersonation
+
+Image Source: https://old.zeek.org/brocon2017/slides/spear_phish.pdf
+
+One of the evasion techniques for phishing is impersonation, which was a technique used in the Google Docs phishing campaign previously mentioned.
+
+The first example is an Address Spoof, where the “From” appears to be a legitimate government address, but the “Reply-to” does not. This could be detected if our NIDS is configured to check email headers. Some may be configured to check certain types of mail, so one that appears legitimate may be missed by NIDS.
+
+A Historically New Attacker may have a better chance of evading detection when it appears legitimate and the NIDS is not checking for new senders.
+
+In a Name Spoof, the sender name does not match the name in the email address. This technique could evade NIDS depending on configuration, but the name mismatch could be quite obvious to the user.
+
+----------------------------------------------------------------
+
+Slide 13 - Execution: User execution of malicious link/file
+
+https://attack.mitre.org/techniques/T1204/001/
+
+Once the victim opens the document or clicks the link, the embedded script starts running resulting in outbound traffic from victim’s device to a malicious server (in our fictitious attack).
+
+Indicators that a new network connection was created include:
+new connections to known malicious destinations, perhaps known destinations for phishing campaigns
+new connections to malicious destinations
+multiple network connections or redirects
+outbound traffic from the victim's device to the phishing website or malicious server
+
+Network traffic content indicators include:
+in use of files that do not normally initiate network connections
+malicious bash code execution patterns
+outbound traffic from the victim's device to the phishing website or malicious server
+multiple network connections or redirects
+non-standard port use
+suspicious path between sender and receiver
+
+Evasion Techniques:
+Encrypted traffic
+Protocol Obfuscation
+Traffic fragmentation
+Timing-based evasion
+DNS Tunneling (explained on next slide)
+
+----------------------------------------------------------------
+
+Slide 14 - Evasion: DNS tunneling
+
+Source: https://bluecatnetworks.com/blog/why-you-should-pay-attention-to-dns-tunneling/
+
+When the user clicks the malicious link or malicious code executes from an attachment, it can attempt to visit a malicious website. To resolve the IP address of the malicious site, a query is made to DNS on port 53 which is normally secured by an organization’s firewall. An attacker can evade this mitigation with DNS tunneling.
+
+In DNS tunneling, the attacker creates a DNS server (command and control server) with a tunneling malware program, which was also installed on the victim’s machine as part of malicious code execution. When the victim visits the website, they are directed to the DNS query resolver which points to command and control server. This establishes a connection between the attacker and the victim.
+
+----------------------------------------------------------------
+
+Slide 15 - Command & Control: Encrypted Channel
+
+https://attack.mitre.org/techniques/T1573/
+
+In the previous step, DNS tunneling was used to establish an undetected connection between the attacker and victim. The attacker can further avoid detection through encryption that conceals command and control traffic.
+
+If the user’s system has turned into a zombie, there may be irregularities in memory usage and presence of new suspicious processes. This is something that would need to be detected by a process monitor, such as sysdig.
+
+However, NIDS can detect various network traffic indicators, such as encrypted payloads, use of non-standard protocols (evasion explained on the next slide), and use of protocols that do not correspond with the correct ports.
+
+
+Sources:
+https://www.secpod.com/blog/command-and-control-servers-things-you-should-know/
+https://arista.my.site.com/AristaCommunity/s/article/Threat-Hunting-Series-Detecting-Command-Control-in-the-Cloud
+vectra.ai/blogpost/encrypted-command-and-control-can-you-really-cover-your-tracks
+https://content.vectra.ai/hubfs/downloadable-assets/WhitePaper-How-to-detect-malicious-covert-communications.pdf
+
+
+----------------------------------------------------------------
+
+Slide 16 - Evasion: Custom C2 Protocols
+
+Source: https://www.activecountermeasures.com/mitre-attck-matrix-custom-c2-protocol/
+
+The tcpdump packet capture above shows what appears to be https on port 443, but the presence plaintext after the SYN/ACK indicates that this is not https traffic. Many tools incorrectly label traffic based on the incoming port rather than analyzing the packet which makes it easier for attackers to use custom protocols.
+
+----------------------------------------------------------------
+
+Slide 17 - Persistence: Traffic Signaling (port knocking)
+
+https://attack.mitre.org/techniques/T1205/
+https://resources.infosecinstitute.com/topic/mitre-attck-port-knocking/
+
+Once the adversary successful carries out a custom C2 attack with encrypted traffic, the adversary could move onto traffic signalling to help cover his or her tracks. Traffic signalling helps hide open ports and malicious functionality by using low volume traffic and following trusted protocols. It attempts to mask malicious traffic by blending it in with genuine traffic. Traffic signalling also gives the adversary an opportunity to open a closed port which may be used later on, called a backdoor.
+
+Port knocking is a type of traffic signaling. This technique is used by attackers to open closed ports by sending a specific sequence of connection attempts. Port knocking can be used as a defense technique, but it can also be used by attackers.
+
+----------------------------------------------------------------
+
+Slide 18 - Persistence: Traffic Signaling (port knocking)
+
+Image source: https://tecadmin.net/secure-ssh-connections-with-port-knocking-linux/
+
+----------------------------------------------------------------
+
+Slide 19 - Credential Access: Adversary-in-the-middle
+
+https://attack.mitre.org/techniques/T1557/
+
+Let’s say the adversary has successfully established a backdoor and has a stealthy command and control. Next, they exploit common networking protocols that are responsible for flow of network traffic. They force the victim to communicate through a adversary controlled environment in an adversary-in-the-middle attack. The attacker can manipulate DNS and leverage position to intercept user credentials and session cookies.
+
+The organization might observe a suspiciously high amount of traffic being routed through a compromised machine with the usual suspicious network indicators. 
+
+The attacker can minimize detection by appearing legitimate and keeping a small footprint with targeted attacks.
+
+----------------------------------------------------------------
+
+Slide 20 - Credential Access: Adversary-in-the-middle
+
+Image source: https://www.armorblox.com/blog/microsoft-phishing-attack/
+
+The above methodology defines how an adversary used a reverse proxy to bypass multi-factor authentication. Reverse proxies, unlike conventional forward proxies, are used to provide an extra layer of security. A reverse proxy receives a request sent to the server from the client and forwards it to the server and forwards the response from the server to the client.
+
+In the attack we are discussing above, the adversaries turned their servers into reverse proxies that host the website that mimics the actual site the user is trying to visit.
+
+Now the unsuspecting user clicks on the innocuous looking phishing link and reaches the website hosted by the adversary. The user enters the credentials. The adversary forwards the information and request to login to the actual website’s server. 
+
+The legitimate server then responds with a Multi-Factor authentication screen which is sent to the user. The adversaries phishing site proxies the multi-factor authentication screen to the user and receives the response which is then proxied to the legitimate server which returns a session cookie.
+
+The adversary steals the session cookie of the user due to strategic presence as the reverse proxy and just redirects the user to a different page.
+
+----------------------------------------------------------------
+
+Slide 21 - Credential Access: Adversary-in-the-middle
+
+Image source: https://www.armorblox.com/blog/microsoft-phishing-attack/
+
+Continued image for explanation on previous slide.
+
+----------------------------------------------------------------
+
+Slide 22 - Lateral Movement: Remote Services/SSH
+
+https://attack.mitre.org/techniques/T1021/004/
+
+With newly stolen credentials, the adversary can set up an remote session using a secure shell. 
+
+NIDS may detect suspicious access patterns that indicate an illegitimate remote session set up. Malicious behavior may also be observed from newly created SSH connections set up using valid credentials 
+
+SSH encrypts the data in transit which can be decrypted with the private key of the recipient making it a serious threat as intrusion detection systems cannot just probe into encrypted packets for indicators of malware or malicious script.
+
+Source: https://www.blackhillsinfosec.com/sshazam-hide-your-c2-inside-of-ssh/
+
+SSHazam is a method that allows an adversary to run a C2 channel that is hidden in an SSH tunnel to avoid detection. In this evasion technique, an empire server is a critical component. The empire server is a post-exploitation framework that acts Command and Control server of the adversary. It is used to maintain control over the compromised system.
+
+As we can see an SSH tunnel is set up. An ssh tunnel is a encrypted connection, usually setup between two hosts or local machine and remote session, to secure the data exchange. All the information passed in this tunnel is encrypted.
+
+In our fictitious attack, an SSH tunnel is set up between the victim’s system and the empire server run by the adversary. Following the cue from traffic signalling, SSH server is set to listen on port 443  (which is designated for HTTPS traffic), the network exchange between adversary and the victim is encrypted because of the SSH tunnel and it should blend in with traffic on port 443 as it is encrypted too (although the encryption methods might be different).
+
+A private key is added to the victim’s system and corresponding public key is added to the empire server to configure the SSH tunnel. The adversary in this scenario can prevent offensive strategy from crippling the empire server by changing its configuration, so that even if someone gets hold of the private key installed into the victim’s server, they cannot get control of the empire server.
+
+This methodology helps the adversary set up an encrypted ssh tunnel through which C2 traffic is exchanged while avoiding detection. The port mismatch also helps (port 443 instead of port 22).
+
+----------------------------------------------------------------
+
+Slide 23 - Collection: Data from network shared drive
+
+https://attack.mitre.org/techniques/T1039/
+
+After the attacker has successfully set up an encrypted C2 channel to a system on the network, the attacker may search network shared drives to find files of interest. This enables them to collect data to be exfiltrated.
+
+In this phase, the attacker will also look to collect critical information about the network file server and other accessible data from the compromised system.
+
+We start observing that the newly initiated connections that are scanning for network shares. Since the adversary here is purportedly good at using traffic signalling, we might not observe the usual sign of anomalous traffic to detect that network shares are being scanned. However, we can monitor the traffic on ports like 139 and 445, which are used by Server Message Block (SMB) to share files.
+
+The incoming traffic generated by the adversary might go unnoticed due to usage of port 443 (instead of 22) and having a secure SSH tunnel, but we can detect unusual traffic through the file sharing ports (139 and 445).
+
+It is possible for the attacker to adapt privilege escalation to gain access to an unauthorized file (the corrupted machine has no access to it), and such attempts can be detected. We can analyze the logs to find out if there were any unusual attempts to access a restricted file, but this would not be captured by NIDS.
+
+Further the adversary can analyze the file metadata to round up important files along with strategies discussed above. We can detect these attacks only if we monitor for file access attempts.
+
+----------------------------------------------------------------
+
+Slide 24 - Exfiltration: Exfil over C2 Channel
+
+https://attack.mitre.org/techniques/T1041/
+
+Source: https://blog.apnic.net/2022/03/31/how-to-detect-and-prevent-common-data-exfiltration-attacks/#:~:text=SMTP%20is%20one%20of%20the,SMTP%20to%20exfiltrate%20stolen%20data.
+
+In the previous phase the attacker has stealthily identified critical network shares is ready to exfiltrate data over their C2 channel.
+
+The attacker has managed to scan the network shares, establish a secure a C2 channel encased by a SSH tunnel. The data exfiltration task combined with the characteristics displayed by the attacker can lead to the attacker being classified as a Advanced Persistent Threat. 
+
+It is crucial for the organization to monitor the ports like 139 and 445 (these are file sharing ports). Although there is a chance for the attacker to use these ports, the attacker can exfiltrate data utilizing a an alternative protocol such as ICMP.
+
+We also find program misuse to be a viable strategy for exfiltrating the data of files with privilege access. You can use an innocuous looking binary (like zip, rar, curl) to read a file which you might not have read access to (no privilege to open or use cat binary which is used to read). But this can only be detected if command line activity log is active.
+
+In our case, since the attacker has access to a covert C2 channel, the attacker can encode the desired information into the communication channel. To avoid detection from uncommon data flows, the attacker can use data fragmentation, which involves breaking data into smaller fragments that can be exfiltrated individually.
+
+----------------------------------------------------------------
+
+Slide 25 - Impact: Network Denial of Service 
+
+https://attack.mitre.org/techniques/T1498/
+Source: https://www.cisco.com/assets/sol/sb/Switches_Emulators_v2_3_5_xx/help/350_550/index.html#page/tesla_350_550_olh/types_of_attacks.html
+
+If you have followed the lecture so far, we have explained how the attacker did network discovery to gather information about the organization, chose a target, used spearfishing to reel in the targeted victim, ran malicious scripts on the system to turn it into a zombie, and gained access to the network, set up an encrypted C2 channel and established persistent remote access, stole credentials, and stole sensitive data.
+
+If they haven’t been detected by NIDS yet, they’ll surely be detected during this last attack. Or will they?
+
+Network Denial of Service attacks aim to disrupt a service, such as website or email service, by exhausting network bandwidth. A NIDS might detect a Denial of Service attack if free ports start receiving ICMP, SYN, TCP, and/or SYN-FIN packets in abundance over other packets. They may also observe new processes that do not need network connections making connections.
+
+The attacker can continue to evade detection through fragmentation, traffic variation, and a slow-rate attack (explained on the next slide).
+
+----------------------------------------------------------------
+
+Slide 26 - Evasion: Slow-rate Network Denial of Service 
+
+
+https://attack.mitre.org/techniques/T1498/
+Soure: https://www.sciencedirect.com/science/article/abs/pii/S0167404817301980
+
+Slow-rate Network Denial of Service takes advantage of HTTP/2 as it frees connection slots available in the server’s connection pool. The attack targets all the free connection slots available on a organization’s server. This evasion technique is similar to slowloris attack.
+
+In this attack, the malicious client and server first completes a legitimate three-way handshake. When the client sends a GET or POST request, the server returns a data frame and two settings frames. The first setting frame is used to acknowledge the settings sent by the malicious client while establishing the connection, and the second settings frame contains the parameters of server requests for negotiation. This frame has to be acknowledged or the connection is torn down by the server. 
+
+This attack finds that there is enough wait time before the connection is torn down and sends a crafted HTTP/2 packet with header frame and data frame, and keeps extending the servers wait for receiving the acknowledgement of settings frame sent. This attacks causes the server to wait and hence does not allow to process any other genuine requests.
+
