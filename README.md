@@ -1,0 +1,1 @@
+This presentation discusses how to evade detection by network intrusion detection systems (NIDS) at each stage of the cyber kill chain. We provide a primer on Snort rules, which are commonly used NIDS rules, and identify potential indicators that might trigger alerts from NIDS. We also discuss evasion strategies that can be used to avoid detection.
